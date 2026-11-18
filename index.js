@@ -61,6 +61,8 @@ const DEFAULTS = Object.freeze({
     foldLong: true,
     contextMeter: true,
     chatLook: 'cards',
+    /** Dre's fork: hide message headers/footers; text wraps around the avatar. */
+    minimalMessages: true,
     loreCards: true,
     sharpPictures: true,
     animatedPictures: true,
@@ -71,6 +73,7 @@ const TEXT_SIZES = { small: 'Small', normal: 'Normal', large: 'Large', xl: 'Extr
 
 /** Phone features shown as switches in More → Phone features and in the settings panel. */
 const EXTRAS = [
+    { key: 'minimalMessages', id: 'stmui_minimal', label: 'Minimal messages', hint: 'Hide the name, date and message controls; the text wraps around the avatar instead. Use the eye in the top bar to show them again.' },
     { key: 'messageMenu', id: 'stmui_msgmenu', label: 'Message menu', hint: 'Tap ⋯ on a message for a full list of actions with names.' },
     { key: 'dragSwipe', id: 'stmui_dragswipe', label: 'Drag to swipe', hint: 'Drag the last reply left for another version, right for the previous one.' },
     { key: 'foldLong', id: 'stmui_foldlong', label: 'Fold long messages', hint: 'Very long older messages get a Show more button.' },
@@ -182,6 +185,11 @@ const TABS = [
 
 /** Order of the tiles in the "More" sheet; drawers added by other extensions follow. */
 const MORE_ORDER = [
+    // Dre's fork: the bottom tab bar is gone, so Characters, Lorebooks and
+    // Presets live in the More sheet now, first.
+    'rightNavHolder',
+    'WI-SP-button',
+    'ai-config-button',
     'sys-settings-button',
     'persona-management-button',
     'advanced-formatting-button',
@@ -1280,8 +1288,9 @@ class Shell {
         this.focusAt = 0;
         this.resizeFrame = 0;
         // The keyboard slides in over many frames; look once per frame at most.
-        // Checked right away on resize: the tab bar steps aside in the same frame
-        // the screen shrinks for the keyboard, so there is one change, not two.
+        // Checked right away on resize: on wide screens the rail steps aside
+        // in the same frame the screen shrinks for the keyboard, so there is
+        // one change, not two. (On phones there is no tab bar any more.)
         this.onResize = () => this.checkKeyboard();
         this.lastHeight = window.innerHeight;
         this.onFocusIn = event => {
@@ -1309,47 +1318,39 @@ class Shell {
             this.avatar,
             h('span', { class: 'stmui-ab-text' }, [this.titleEl, this.subEl]),
         ]);
-        this.translateBadge = h('span', { class: 'stmui-ab-badge', 'aria-hidden': 'true' });
-        this.translateBtn = h('button', {
+        // Dre's fork: Translate, Chat history and Start a new chat live in the
+        // More sheet now, so the top bar holds More, the minimal-messages
+        // toggle and (in group chats, when the speaker router is installed)
+        // the cast toggle instead. quickTranslate() and openTranslateSheet()
+        // stay for the More sheet row.
+        this.moreBtn = h('button', {
             type: 'button',
-            class: 'stmui-ab-btn stmui-ab-translate',
-            'aria-label': 'Translate chat',
-            title: 'Tap to translate, hold to pick the language',
-        }, [ui('languages'), this.translateBadge]);
-        // Tap: translate the chat (or back to the original). Hold: pick the language.
-        let translateHold = 0;
-        let translateHeld = 0;
-        this.translateBtn.addEventListener('pointerdown', () => {
-            window.clearTimeout(translateHold);
-            translateHold = window.setTimeout(() => {
-                translateHeld = Date.now();
-                buzz(15);
-                openTranslateSheet();
-            }, 450);
-        });
-        for (const type of ['pointerup', 'pointercancel', 'pointerleave']) this.translateBtn.addEventListener(type, () => window.clearTimeout(translateHold));
-        this.translateBtn.addEventListener('contextmenu', event => event.preventDefault());
-        this.translateBtn.addEventListener('click', () => {
-            if (Date.now() - translateHeld < 700) return;
-            buzz(6);
-            quickTranslate();
-        });
+            class: 'stmui-ab-btn stmui-ab-more',
+            'aria-label': t('More'),
+            title: t('More'),
+            onclick: () => {
+                buzz(6);
+                openMoreSheet();
+            },
+        }, [ui('grid')]);
+        this.minimalBtn = h('button', {
+            type: 'button',
+            class: 'stmui-ab-btn stmui-ab-minimal',
+            'aria-label': t('Show message details'),
+            title: t('Show message details'),
+            onclick: () => this.toggleMinimalMessages(),
+        }, [ui('eye-off')]);
+        this.castBtn = h('button', {
+            type: 'button',
+            class: 'stmui-ab-btn stmui-ab-cast',
+            'aria-label': t('Show cast row'),
+            title: t('Show cast row'),
+            onclick: () => this.toggleCast(),
+        }, [ui('users')]);
         this.actions = h('div', { class: 'stmui-ab-actions' }, [
-            this.translateBtn,
-            h('button', {
-                type: 'button',
-                class: 'stmui-ab-btn stmui-ab-chats',
-                'aria-label': 'Chat history',
-                title: 'Chat history',
-                onclick: () => document.getElementById('option_select_chat')?.click(),
-            }, [ui('history')]),
-            h('button', {
-                type: 'button',
-                class: 'stmui-ab-btn stmui-ab-new',
-                'aria-label': 'Start a new chat',
-                title: 'New chat',
-                onclick: () => document.getElementById('option_start_new_chat')?.click(),
-            }, [ui('chat-plus')]),
+            this.moreBtn,
+            this.minimalBtn,
+            this.castBtn,
         ]);
         this.quick = h('button', {
             type: 'button',
@@ -1522,6 +1523,40 @@ class Shell {
         }
     }
 
+    /** Minimal-messages toggle (Dre's fork): eye-off while details are hidden, eye while they show. */
+    toggleMinimalMessages() {
+        buzz(6);
+        setAppearance('minimalMessages', !settings.minimalMessages, this.minimalBtn);
+        this.syncMinimalButton();
+    }
+
+    syncMinimalButton() {
+        const minimal = !!settings.minimalMessages;
+        this.minimalBtn.replaceChildren(ui(minimal ? 'eye-off' : 'eye'));
+        this.minimalBtn.classList.toggle('stmui-ab-on', minimal);
+        const label = minimal ? t('Show message details') : t('Hide message details');
+        this.minimalBtn.setAttribute('aria-label', label);
+        this.minimalBtn.title = label;
+    }
+
+    /** Cast toggle (Dre's fork): asks the speaker router to show or hide its cast row. The button only appears when the router is installed, and the router owns the row — Pocket Tavern never touches its DOM. */
+    toggleCast() {
+        const hook = window.JevSpeakerRouter;
+        if (typeof hook?.setCastVisible !== 'function' || typeof hook?.isCastVisible !== 'function') return;
+        buzz(6);
+        hook.setCastVisible(!hook.isCastVisible());
+        this.syncCastButton();
+    }
+
+    syncCastButton() {
+        const hook = window.JevSpeakerRouter;
+        const visible = typeof hook?.isCastVisible === 'function' ? !!hook.isCastVisible() : false;
+        this.castBtn.classList.toggle('stmui-ab-on', visible);
+        const label = visible ? t('Hide cast row') : t('Show cast row');
+        this.castBtn.setAttribute('aria-label', label);
+        this.castBtn.title = label;
+    }
+
     update() {
         const pageId = currentPageId();
         // When SillyTavern swaps one drawer for another, none is open for a moment.
@@ -1654,12 +1689,14 @@ class Shell {
         else this.avatar.replaceChildren(ui(context.groupId ? 'users' : (hasChat ? 'user' : 'chats')));
         this.actions.hidden = !hasChat;
         this.search.hidden = hasChat;
-        const shownIn = hasChat ? chatLanguage() : null;
-        this.translateBtn.classList.toggle('stmui-ab-on', !!shownIn);
-        const next = shownIn ?? quickLanguage();
-        this.translateBadge.textContent = next ? next.split('-')[0].toUpperCase() : '';
-        this.translateBadge.hidden = !next;
-        this.translateBtn.setAttribute('aria-label', shownIn ? t('Show original') : (next ? t('Translate to {lang}', { lang: languageName(next) }) : t('Translate chat')));
+        this.syncMinimalButton();
+        // The cast button only exists when this is a group chat and the
+        // speaker router is installed (it loads after Pocket Tavern, so this
+        // is checked on every render, not just at startup). It stays visible
+        // while the row is hidden — it is the way back.
+        const castPresent = typeof window.JevSpeakerRouter?.isCastVisible === 'function';
+        this.castBtn.hidden = !context.groupId || !castPresent;
+        if (castPresent) this.syncCastButton();
         this.home.hidden = !hasChat;
     }
 }
@@ -1669,8 +1706,12 @@ function openMoreSheet() {
         title: 'More',
         subtitle: '',
         fill: body => {
+            // Dre's fork: the bottom tab bar is gone, so the More sheet also
+            // shows the Characters, Lorebooks and Presets pages that used to
+            // be tabs. Only Chat (closing a page returns to it) and More
+            // itself stay out.
             const drawers = Array.from(document.querySelectorAll('#top-settings-holder > .drawer'))
-                .filter(drawer => drawer.id && !TABS.some(tab => tab.id === drawer.id));
+                .filter(drawer => drawer.id && !['chat', 'more'].includes(drawer.id));
             drawers.sort((a, b) => {
                 const ai = MORE_ORDER.indexOf(a.id);
                 const bi = MORE_ORDER.indexOf(b.id);
@@ -5517,6 +5558,11 @@ function applyChatLook() {
     else delete root.dataset.stmuiLook;
 }
 
+/** Minimal messages (Dre's fork): hide each card's header and footer; the text wraps around the avatar instead. */
+function applyMinimalMessages() {
+    document.documentElement.classList.toggle('stmui-minimal-messages', active && settings.chatStyle && settings.minimalMessages);
+}
+
 function chatLookControl() {
     const names = { cards: 'Cards', bubbles: 'Bubbles', flat: 'Flat' };
     return h('div', { class: 'stmui-segmented stmui-look-seg', role: 'group', 'aria-label': 'Chat look' },
@@ -6794,6 +6840,7 @@ function applyTextSize() {
 function syncExtras() {
     applyTextSize();
     applyChatLook();
+    applyMinimalMessages();
     syncComposer();
     // (Also takes the one-version marker off again when Pocket Tavern turns off.)
     syncSwipeCounters();

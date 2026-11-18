@@ -1,6 +1,14 @@
 /** Shown in More → What's new, and once after each update. Newest first. */
 export const CHANGES = [
     {
+        version: '2.17.1-dre.1',
+        items: [
+            "Dre's fork: the bottom tab bar is gone on phones. More, Characters, Lorebooks and Presets live in the More sheet now, reached from the top bar, and the chat runs to the bottom of the screen.",
+            "Dre's fork: the top bar keeps Home, the character and Quick switch, and gains More, a minimal-messages toggle and (in group chats, when the speaker router is installed) a cast toggle. Translate, Chat history and Start a new chat moved to the More sheet.",
+            "Dre's fork: Minimal messages (on by default, in More → Phone features) hides each message's header and footer and shrinks the card, with the text wrapping around the avatar — the Dre Mobile look, built into Pocket Tavern. Tap the eye in the top bar to show the details again.",
+        ],
+    },
+    {
         version: '2.17.0',
         items: [
             "New: a desktop layout. Set Pocket Tavern to Always on on a computer and the tabs become a rail on the left, pages open beside the chat, and menus are dialogs.",

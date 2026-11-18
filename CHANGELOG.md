@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.17.1-dre.1
+
+Dre's fork: maximum space for chat messages, built on Pocket Tavern 2.17.0.
+
+- **No bottom tab bar on phones.** Chat, Characters, Lorebooks, Presets and More used to sit in a 62px bar at the bottom. The bar is gone; the chat and the message box run to the bottom of the screen. Characters, Lorebooks and Presets moved into the More sheet, first in the list.
+- **Top bar, reworked.** Home, the character (or group) with Connected, and Quick switch stay on the left. On the right, Translate, Chat history and Start a new chat are gone — all three are rows in the More sheet now. In their place: More, a minimal-messages toggle, and (in group chats, when the speaker router is installed) a cast toggle.
+- **Minimal messages.** On by default, with a switch in More → Phone features. Each message card loses its header (name, date, ⋯, edit) and its footer (message number, timer, token count, swipe controls), the card shrinks, and the text wraps around the avatar — the Dre Mobile look, built into Pocket Tavern instead of a second extension. Tap the eye in the top bar to show the details again. The long-press message menu still gives the full action list while details are hidden. Only the cards look; bubbles and flat are unchanged, and editing a message is untouched.
+- **Desktop layout unchanged.** On wide screens the tabs still sit in the rail on the left.
+
 ## 2.17.0
 
 A desktop layout, so Pocket Tavern works on a computer too. Phones are unchanged.

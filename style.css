@@ -968,7 +968,9 @@ dialog.stmui-compact .stmui-panel:has(.stmui-search-input:focus) .stmui-tools {
 html.stmui-shell {
     --stmui-appbar-h: 56px;
     --stmui-tabbar-h: 62px;
-    --stmui-bottom: calc(var(--stmui-tabbar-h) + var(--stmui-safe-bottom));
+    /* Dre's fork: no bottom tab bar on phones, so the chat and the message
+       box run to the safe area at the bottom. Wide screens override this. */
+    --stmui-bottom: var(--stmui-safe-bottom);
     --topBarBlockSize: calc(var(--stmui-appbar-h) + var(--stmui-safe-top));
     --stmui-page-h: calc(100dvh - var(--topBarBlockSize) - var(--stmui-bottom));
 }
@@ -1166,6 +1168,13 @@ html.stmui-shell .stmui-tabbar {
 }
 
 html.stmui-shell.stmui-keyboard .stmui-tabbar {
+    display: none;
+}
+
+/* Dre's fork: the bottom tab bar is gone on phones — More lives in the top
+   bar now. The tab bar element stays in the page so the desktop rail on
+   wide screens (html.stmui-wide) is untouched. */
+html.stmui-shell:not(.stmui-wide) .stmui-tabbar {
     display: none;
 }
 
@@ -8257,5 +8266,117 @@ html.stmui-wide .stmui-banner {
 
     html.stmui-wide .welcomeRecent .recentChat:hover {
         border-color: color-mix(in srgb, var(--stmui-text) 22%, transparent);
+    }
+}
+
+/* ==========================================================================
+   Minimal messages (Dre's fork, html.stmui-minimal-messages)
+
+   Hides each message card's header (name, date, ⋯, edit) and footer
+   (message number, timer, token count, swipe controls) and shrinks the
+   card, the way Dre Mobile's Minimal mode does. The avatar stays and the
+   text wraps around it, so the space the header used is not wasted.
+
+   Pocket Tavern lays cards out as a CSS grid (avatar in the header row,
+   text full-width below), so minimal mode switches the card to the float
+   layout Dre Mobile uses instead of only hiding rows. Values mirror
+   Dre Mobile 0.2.0: 48px avatar (44px under 600px), text line-height
+   1.3 (1.26 small), paragraph margins 0.2em, card padding 5px top/bottom
+   (4px small), 4px between cards (2px small), and the 30px right swipe
+   gutter reclaimed.
+
+   Only the cards look: bubbles and flat keep their own layouts.
+   Editing a message is untouched (html.stmui-editing).
+   ========================================================================== */
+
+/* The card: float layout, tighter all round. */
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes {
+    display: flow-root !important;
+    height: auto !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+
+/* The avatar: floated left, the text flows around it. */
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper {
+    float: left !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 8px 3px 0 !important;
+    padding: 0 !important;
+}
+
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar img {
+    width: 48px !important;
+    height: 48px !important;
+    margin: 0 !important;
+}
+
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_block {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+}
+
+/* Header and footer: gone together. */
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .ch_name,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_buttons,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_edit_buttons,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesIDDisplay,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_timer,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .tokenCounterDisplay,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .extraMesButtonsHint,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_edit,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes > .swipe_left,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes > .swipeRightBlock,
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .swipes-counter {
+    display: none !important;
+}
+
+/* The text: tighter lines, no right gutter. */
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_block > .mes_text {
+    margin: 0 !important;
+    padding-right: 0 !important;
+    line-height: 1.3 !important;
+    overflow: visible !important;
+}
+
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_text p {
+    margin-top: 0.2em !important;
+    margin-bottom: 0.2em !important;
+}
+
+/* Reasoning details carry the same right gutter as a margin. */
+html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_reasoning_details {
+    margin-right: 0 !important;
+}
+
+@media screen and (max-width: 600px) {
+    html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes {
+        margin-bottom: 2px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+    html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper {
+        margin-right: 7px !important;
+    }
+
+    html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar,
+    html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    html.stmui-minimal-messages.stmui-chat:not([data-stmui-look]):not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_block > .mes_text {
+        line-height: 1.26 !important;
     }
 }
