@@ -1,19 +1,37 @@
 /** Shown in More → What's new, and once after each update. Newest first. */
 export const CHANGES = [
     {
-        version: '2.17.1-dre.1',
+        version: '2.18.1-dre.1',
         items: [
-            "Dre's fork: the bottom tab bar is gone on phones. More, Characters, Lorebooks and Presets live in the More sheet now, reached from the top bar, and the chat runs to the bottom of the screen.",
+            "Dre's fork, now on upstream 2.18.1: the bottom tab bar is still gone on phones — no tucking, no arrow. More, Characters, Lorebooks and Presets live in the More sheet now, reached from the top bar, and the chat runs to the bottom of the screen.",
             "Dre's fork: the top bar keeps Home, the character and Quick switch, and gains More, a minimal-messages toggle and (in group chats, when the speaker router is installed) a cast toggle. Translate, Chat history and Start a new chat moved to the More sheet.",
             "Dre's fork: Minimal messages (on by default, in More → Phone features) hides each message's header and footer and shrinks the card, with the text wrapping around the avatar — the Dre Mobile look, built into Pocket Tavern. Tap the eye in the top bar to show the details again.",
+            "New from upstream: Size (Automatic / Comfortable / Compact) and a Floating / Docked message box. The Characters page buttons are fixed too.",
+        ],
+    },
+    {
+        version: '2.18.1',
+        items: [
+            "The docked message box is redone like a messaging app: your persona, the text field and Send in one row at the bottom, with the other tools in a row above.",
+            "Send stays level with the field as your message grows, and the bar has room above the bottom edge.",
+        ],
+    },
+    {
+        version: '2.18.0',
+        items: [
+            "In a chat the bottom tabs tuck away, so they are not right under the message box. Tap the arrow in the message box to bring them back. (Not in Dre's fork: the tab bar is gone entirely on phones.)",
+            "New Size option (More → Themes): Compact has slimmer bars and tighter cards, so more of the chat fits. Automatic picks it on small phones.",
+            "New Message box option: Docked sits flat along the bottom edge, like a messaging app.",
+            "Pocket Tavern now switches on by itself on computers too, with the desktop layout. Prefer the original there? Pick Phones only.",
+            "Fixed: the Characters page hid its page buttons, so with many characters you could not see the rest.",
         ],
     },
     {
         version: '2.17.0',
         items: [
-            "New: a desktop layout. Set Pocket Tavern to Always on on a computer and the tabs become a rail on the left, pages open beside the chat, and menus are dialogs.",
+            "New: a desktop layout. On a computer the tabs become a rail on the left, pages open beside the chat, and menus are dialogs.",
             "On a computer a page stays open while you chat, so you can change a preset or a setting and keep going. Back, the tab again or Escape closes it.",
-            "Phones are unchanged, and computers still stay off unless you pick Always on.",
+            "Phones are unchanged.",
         ],
     },
     {

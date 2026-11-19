@@ -1,13 +1,37 @@
 # Changelog
 
-## 2.17.1-dre.1
+## 2.18.1-dre.1
 
-Dre's fork: maximum space for chat messages, built on Pocket Tavern 2.17.0.
+Dre's fork, rebased on upstream Pocket Tavern 2.18.1. Everything from 2.17.1-dre.1 below, plus upstream's 2.18.0 and 2.18.1, with two fork adjustments:
 
-- **No bottom tab bar on phones.** Chat, Characters, Lorebooks, Presets and More used to sit in a 62px bar at the bottom. The bar is gone; the chat and the message box run to the bottom of the screen. Characters, Lorebooks and Presets moved into the More sheet, first in the list.
-- **Top bar, reworked.** Home, the character (or group) with Connected, and Quick switch stay on the left. On the right, Translate, Chat history and Start a new chat are gone — all three are rows in the More sheet now. In their place: More, a minimal-messages toggle, and (in group chats, when the speaker router is installed) a cast toggle.
-- **Minimal messages.** On by default, with a switch in More → Phone features. Each message card loses its header (name, date, ⋯, edit) and its footer (message number, timer, token count, swipe controls), the card shrinks, and the text wraps around the avatar — the Dre Mobile look, built into Pocket Tavern instead of a second extension. Tap the eye in the top bar to show the details again. The long-press message menu still gives the full action list while details are hidden. Only the cards look; bubbles and flat are unchanged, and editing a message is untouched.
+- **No bottom tab bar on phones — still.** Upstream's tabs now tuck away in a chat and come back with an arrow in the message box. In this fork the bar is gone entirely on phones, so there is nothing to tuck and no arrow: the "Hide tabs in a chat" switch is removed, and the tabs arrow in the message box is hidden. Characters, Lorebooks and Presets stay in the More sheet, first in the list.
+- **Top bar, reworked (from 2.17.1-dre.1).** Home, the character (or group) with Connected, and Quick switch stay on the left. On the right, Translate, Chat history and Start a new chat are gone — all three are rows in the More sheet now. In their place: More, a minimal-messages toggle, and (in group chats, when the speaker router is installed) a cast toggle.
+- **Minimal messages (from 2.17.1-dre.1).** On by default, with a switch in More → Phone features. Each message card loses its header (name, date, ⋯, edit) and its footer (message number, timer, token count, swipe controls), the card shrinks, and the text wraps around the avatar — the Dre Mobile look, built into Pocket Tavern instead of a second extension. Tap the eye in the top bar to show the details again. The long-press message menu still gives the full action list while details are hidden. Only the cards look; bubbles and flat are unchanged, and editing a message is untouched.
 - **Desktop layout unchanged.** On wide screens the tabs still sit in the rail on the left.
+- **New from upstream, kept:** Size (Automatic / Comfortable / Compact) and the Floating / Docked message box, the Characters page buttons fix, and Pocket Tavern now switching on by itself on computers too — pick "Phones only" in its first-time notice if you prefer the original on a computer.
+
+## 2.18.1
+
+The **Docked** message box, redone. In 2.18.0 it was the floating box flattened: the field on top, every tool and Send in a row under it, pressed against the bottom edge, and Send far from the text.
+
+- **One row at the bottom, like a messaging app:** your persona's picture, the text field, and Send right beside it. The field and Send are where your thumb is, and Send stays level with the bottom of the field as your message grows.
+- **The other tools in a row above:** the tabs arrow, ☰, the wand, anything extensions add, and the context ring.
+- The bar has 8px of room above the bottom edge, a clear line between it and the chat, and the same surface as the tab bar, so with the tabs out they read as one bottom bar.
+- A phone held sideways keeps a single row. The desktop layout uses the same docked bar in the chat column.
+- The phone test checks that persona, field and Send share the bottom row and that Send is clear of the edge.
+
+## 2.18.0
+
+Fixes and changes from the first round of feedback on Reddit.
+
+- **Fixed: the Characters page hid its page buttons.** With more characters than fit on one page (50 by default), there was no way to see the rest. SillyTavern shows no page numbers there, only ‹ ›, and Pocket Tavern counted the numbers, found none and hid the buttons. The buttons now show whenever there is more than one page, and they are 44px to tap. On a narrow phone the list keeps ‹ › and drops « ». Page buttons on the Personas and lorebook pages are 44px too.
+- **The tabs tuck away in a chat.** The bottom tabs sat right under the message box, so it was easy to hit them when you meant to start typing. In a chat they now slide away and the chat gets the room. An arrow at the start of the message box's tool row brings them back, and they tuck away again when you start typing, scroll the chat, or tap Chat. Pages, the start screen and the desktop layout always show the tabs. Switch it off with **Hide tabs in a chat** under More → Phone features.
+- **Size: Automatic, Comfortable or Compact** (More → Themes, and in Pocket Tavern's settings). Compact has a slimmer top bar and tabs, smaller pictures and names in the message header, less space around and inside each message card, and a slimmer message box. Every button still has a 44px tap area. Automatic picks Compact on phones narrower than 380px (most 360px Androids and foldable cover screens) and Comfortable on the rest.
+- **Message box: Floating or Docked.** Floating is the box you know. Docked sits flat along the bottom edge, full width, like a messaging app, with your text in its own field. Your persona button is in both.
+- **Automatic now means phones and computers.** Pocket Tavern switches on by itself on any device: phones get the phone layout, and screens at least 960 × 560px get the desktop layout. The first time it turns on by itself on a computer or tablet, a short note says so and offers **Use it on phones only**. "Use it on this device" now offers **Automatic: phones and computers**, **Phones only** and **Off on this device**. If you had picked Always on, that is Automatic now and nothing changes for you.
+- **Tablets and unfolded foldables:** messages and the message box are a centred column up to 720px wide, so lines stay easy to read instead of running across the whole screen.
+- Fixed: SillyTavern capped the chat's height for its own message box, which left a gap under the chat when the tabs were hidden.
+- The phone test checks the page buttons, the tucked tabs, Compact with Docked, and that the desktop layout turns on by itself.
 
 ## 2.17.0
 

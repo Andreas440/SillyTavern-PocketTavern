@@ -1178,6 +1178,13 @@ html.stmui-shell:not(.stmui-wide) .stmui-tabbar {
     display: none;
 }
 
+/* Dre's fork: upstream 2.18 adds an arrow in the message box to bring the
+   tucked tabs back. There is no tab bar to bring back here, so the arrow
+   stays hidden on phones too. */
+html.stmui-shell.stmui-chat:not(.stmui-wide) .stmui-tabs-btn {
+    display: none !important;
+}
+
 .stmui-tab {
     display: flex;
     flex: 1 1 0;
@@ -8004,6 +8011,354 @@ html.stmui-touch .inline-drawer-header > .stmui-ext-note {
 
 .stmui-menu-row-danger .stmui-row-text > small {
     color: var(--stmui-muted);
+}
+
+/* ==========================================================================
+   Tucked tabs (html.stmui-tabs-tucked): in a chat the tab bar slides away so
+   it is not right under the message box; the arrow in the box brings it back.
+   ========================================================================== */
+
+html.stmui-shell.stmui-tabs-tucked {
+    --stmui-bottom: var(--stmui-safe-bottom);
+}
+
+/* SillyTavern caps the chat at the screen minus its own message box; ours floats, so the chat fills the space. */
+html.stmui-chat.stmui-shell #chat {
+    max-height: none;
+}
+
+html.stmui-shell .stmui-tabbar {
+    transition: transform 0.2s var(--stmui-ease), visibility 0s linear 0s;
+}
+
+html.stmui-shell.stmui-tabs-tucked .stmui-tabbar {
+    height: calc(var(--stmui-tabbar-h) + var(--stmui-safe-bottom));
+    transform: translateY(100%);
+    /* Hidden from touch, keyboard and screen readers once it has slid away. */
+    visibility: hidden;
+    transition: transform 0.2s var(--stmui-ease), visibility 0s linear 0.2s;
+}
+
+html.stmui-shell:is(.stmui-motion-light, .stmui-motion-off) .stmui-tabbar {
+    transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.stmui-shell .stmui-tabbar {
+        transition: none;
+    }
+}
+
+/* The arrow: first in the row of tools along the bottom of the message box. */
+.stmui-tabs-btn {
+    display: none;
+}
+
+html.stmui-chat.stmui-tabs-tuckable .stmui-tabs-btn {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--stmui-muted);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.stmui-tabs-btn .stmui-svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s var(--stmui-ease);
+}
+
+.stmui-tabs-btn-out .stmui-svg {
+    transform: rotate(180deg);
+}
+
+.stmui-tabs-btn:active {
+    background: var(--stmui-raised-2);
+}
+
+.stmui-tabs-btn:focus-visible {
+    outline: 2px solid var(--stmui-accent);
+    outline-offset: -2px;
+}
+
+/* Narrow phones: with the arrow in the row, your persona shows as its picture (the name is in its label). */
+@media (max-width: 400px) {
+    html.stmui-chat.stmui-tabs-tuckable .stmui-persona-name {
+        display: none;
+    }
+
+    html.stmui-chat.stmui-tabs-tuckable .stmui-persona-chip {
+        padding-right: 3px;
+    }
+}
+
+/* Page buttons (characters, personas, lorebook entries): 44px to tap like everything else. */
+html.stmui-touch .paginationjs-pages li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 12px;
+}
+
+html.stmui-touch .paginationjs-pages li.disabled > a {
+    opacity: 0.4;
+}
+
+/* On a narrow phone the character list keeps ‹ › and drops « » so the row fits. */
+@media (max-width: 400px) {
+    html.stmui-touch #rm_print_characters_pagination :is(.paginationjs-first, .paginationjs-last) {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   Compact size (html.stmui-compact): slimmer bars, tighter cards and message
+   box, so more of the chat fits. Every tap area stays at least 44px.
+   ========================================================================== */
+
+@media not all and (orientation: landscape) and (max-height: 520px) and (min-aspect-ratio: 3/2) {
+    html.stmui-shell.stmui-compact {
+        --stmui-appbar-h: 48px;
+        --stmui-tabbar-h: 52px;
+    }
+
+    html.stmui-compact:not(.stmui-wide) .stmui-tab {
+        gap: 2px;
+        padding: 4px 2px;
+    }
+
+    html.stmui-compact:not(.stmui-wide) .stmui-tab-icon {
+        width: 48px;
+        height: 26px;
+    }
+
+    html.stmui-compact:not(.stmui-wide) .stmui-tab-indicator {
+        top: 4px;
+        height: 28px;
+    }
+
+    html.stmui-compact:not(.stmui-wide) .stmui-tab-indicator::before {
+        width: 52px;
+    }
+}
+
+html.stmui-compact .stmui-tab-icon .stmui-svg {
+    width: 21px;
+    height: 21px;
+}
+
+html.stmui-compact .stmui-ab-who {
+    height: 44px;
+}
+
+html.stmui-compact .stmui-ab-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+/* Messages: less air around and inside each card. */
+html.stmui-chat.stmui-compact #chat {
+    padding-top: 4px;
+}
+
+html.stmui-chat.stmui-compact body:not(.bubblechat):not(.documentstyle) #chat .mes {
+    max-width: calc(100% - 8px);
+    margin: 4px;
+    padding: 8px 12px;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar,
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar img {
+    width: 28px;
+    height: 28px;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mesAvatarWrapper > .avatar {
+    margin-right: 8px;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_block > .ch_name {
+    min-height: 28px;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) #chat .mes .ch_name .name_text {
+    font-size: 14px;
+}
+
+/* The buttons keep their 44px tap area; it just overlaps the card's padding. */
+html.stmui-chat.stmui-compact:not(.stmui-editing) #chat .mes .mes_buttons .mes_button {
+    margin: -8px 0;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes .mes_block > .mes_text {
+    margin-top: 4px;
+}
+
+html.stmui-chat.stmui-compact #chat .mes_text {
+    line-height: 1.5;
+}
+
+html.stmui-chat.stmui-compact #chat .mes_text p {
+    margin: 0.35em 0;
+}
+
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes > .swipe_left,
+html.stmui-chat.stmui-compact:not(.stmui-editing) body:not(.bubblechat):not(.documentstyle) #chat .mes > .swipeRightBlock {
+    margin-top: 4px;
+}
+
+/* The message box: a little slimmer. */
+html.stmui-chat.stmui-compact #form_sheld {
+    padding: 12px 8px 4px;
+}
+
+html.stmui-chat.stmui-compact #send_form {
+    padding: 2px 4px 4px;
+}
+
+html.stmui-chat.stmui-compact #send_textarea {
+    min-height: 36px;
+    padding: 8px 8px 4px;
+}
+
+/* Tablets and unfolded foldables: the chat is a centred column with lines short
+   enough to read comfortably, instead of running across the whole screen. */
+@media (min-width: 760px) {
+    html.stmui-chat:not(.stmui-wide):not([data-stmui-look="bubbles"]) body:not(.bubblechat):not(.documentstyle) #chat .mes {
+        width: 100%;
+        max-width: 720px;
+        margin-inline: auto;
+    }
+
+    html.stmui-chat:not(.stmui-wide):not(.stmui-docked) #send_form {
+        width: 100%;
+        max-width: 720px;
+        margin-inline: auto;
+    }
+}
+
+/* ==========================================================================
+   Docked message box (html.stmui-docked): a bar along the bottom edge, like a
+   messaging app. The text field sits at the bottom between your persona and
+   Send, where the thumb is; the other tools sit in a row above it.
+   ========================================================================== */
+
+html.stmui-chat.stmui-docked #form_sheld {
+    padding: 0;
+    background: none !important;
+}
+
+html.stmui-chat.stmui-docked #send_form,
+html.stmui-chat.stmui-docked #send_form:focus-within {
+    position: relative;
+    padding: 4px calc(8px + var(--stmui-safe-right)) 8px calc(8px + var(--stmui-safe-left));
+    border: 0 !important;
+    border-top: 1px solid var(--stmui-line) !important;
+    border-radius: 0;
+    /* The same surface as the tab bar, so with the tabs out they read as one bottom bar. */
+    background: color-mix(in srgb, var(--stmui-surface) 97%, transparent) !important;
+    box-shadow: none;
+}
+
+/* The text gets its own field; it shows the focus instead of the bar. */
+html.stmui-chat.stmui-docked #send_textarea {
+    min-height: 44px;
+    padding: 11px 12px 9px;
+    border: 1px solid var(--stmui-line);
+    border-radius: 12px;
+    background: var(--stmui-raised) !important;
+    transition: border-color 0.2s ease;
+}
+
+html.stmui-chat.stmui-docked #send_textarea:focus {
+    border-color: color-mix(in srgb, var(--stmui-accent) 38%, var(--stmui-line));
+}
+
+/* Portrait: tools on top, then persona, field and Send in one row at the bottom.
+   (A phone held sideways keeps the single row it already has.) */
+@media not all and (orientation: landscape) and (max-height: 520px) and (min-aspect-ratio: 3/2) {
+    html.stmui-chat.stmui-docked #nonQRFormItems {
+        position: static;
+        grid-template-areas:
+            "left gap right"
+            "text text text";
+        row-gap: 4px;
+    }
+
+    html.stmui-chat.stmui-docked :is(#leftSendForm, #rightSendForm) {
+        position: static;
+    }
+
+    /* Room on both sides of the field for the persona picture and Send. */
+    html.stmui-chat.stmui-docked #send_textarea {
+        width: auto;
+        margin-inline: 52px;
+    }
+
+    /* Your persona: its picture, at the start of the bottom row (the name is in its label). */
+    html.stmui-chat.stmui-docked #send_form .stmui-persona-chip {
+        position: absolute;
+        bottom: 8px;
+        inset-inline-start: calc(8px + var(--stmui-safe-left));
+        justify-content: center;
+        width: 44px;
+        max-width: none;
+        height: 44px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    html.stmui-chat.stmui-docked #send_form .stmui-persona-chip::after {
+        inset: 0;
+    }
+
+    html.stmui-chat.stmui-docked #send_form .stmui-persona-name {
+        display: none;
+    }
+
+    html.stmui-chat.stmui-docked #send_form .stmui-persona-img {
+        width: 36px;
+        height: 36px;
+        box-shadow: 0 0 0 1px var(--stmui-line);
+    }
+
+    /* Send (and Stop while a reply is coming) at the end of the bottom row, level with the field. */
+    html.stmui-chat.stmui-docked #send_form #rightSendForm > :is(#send_but, .mes_stop) {
+        position: absolute;
+        bottom: 8px;
+        inset-inline-end: calc(8px + var(--stmui-safe-right));
+        width: 44px;
+        height: 44px;
+        margin: 0;
+    }
+}
+
+html.stmui-chat.stmui-docked.stmui-compact #send_form,
+html.stmui-chat.stmui-docked.stmui-compact #send_form:focus-within {
+    padding-top: 2px;
+    padding-bottom: 6px;
+}
+
+html.stmui-chat.stmui-docked.stmui-compact #send_form .stmui-persona-chip,
+html.stmui-chat.stmui-docked.stmui-compact #send_form #rightSendForm > :is(#send_but, .mes_stop) {
+    bottom: 6px;
+}
+
+html.stmui-chat.stmui-docked.stmui-compact #nonQRFormItems {
+    row-gap: 2px;
 }
 
 /* ==========================================================================
